@@ -1,0 +1,30 @@
+{
+  "name": "bibliohome",
+  "version": "1.0.0",
+  "description": "BiblioHome — Biblioteca Particular Digital",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "install:all": "npm install && cd client && npm install",
+    "dev:server": "node server/index.js",
+    "dev:client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build": "cd client && npm install && npm run build",
+    "start": "npm run build && node server/index.js",
+    "start:prod": "node server/index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "axios": "^1.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.19.0",
+    "selfsigned": "^5.5.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
