@@ -23,6 +23,11 @@ export async function getMe() {
   return res.data;
 }
 
+export async function validateInviteKey(inviteKey) {
+  const res = await api.post('/api/auth/validate-invite', { inviteKey });
+  return res.data;
+}
+
 // ─── Books API ───────────────────────────────────────────
 export async function fetchBookByISBN(isbn) {
   const res = await api.get(`/api/books/isbn/${isbn}`);

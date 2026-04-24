@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Mail, KeyRound } from 'lucide-react';
+import { validateInviteKey } from '../lib/api';
+import { Mail, KeyRound, Ticket } from 'lucide-react';
 import Modal from '../components/Modal';
 
 export default function Login() {
@@ -10,7 +11,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  const [signupData, setSignupData] = useState({ nome: '', email: '', password: '' });
+  const [signupData, setSignupData] = useState({ inviteKey: '', nome: '', email: '', password: '' });
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupMsg, setSignupMsg] = useState('');
 
@@ -36,8 +37,15 @@ export default function Login() {
   const handleSignup = async (e) => {
     e.preventDefault();
     setSignupMsg('');
+
+    if (!signupData.inviteKey.trim()) {
+      setSignupMsg('A chave de convite é obrigatória.');
+      return;
+    }
+
     setSignupLoading(true);
     try {
+      await validateInviteKey(signupData.inviteKey.trim());
       await signUp(signupData.email, signupData.password, signupData.nome);
       setSignupMsg('Conta criada com sucesso! Verifique seu email para confirmar.');
       setTimeout(() => {
@@ -45,7 +53,8 @@ export default function Login() {
         setEmail(signupData.email);
       }, 2000);
     } catch (err) {
-      setSignupMsg(err.message || 'Erro ao criar conta');
+      const msg = err.response?.data?.error || err.message || 'Erro ao criar conta';
+      setSignupMsg(msg);
     } finally {
       setSignupLoading(false);
     }
@@ -135,6 +144,24 @@ export default function Login() {
               {signupMsg}
             </div>
           )}
+          <div className="form-group">
+            <label className="form-label">CHAVE DE CONVITE</label>
+            <div className="form-input-icon-wrapper">
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Digite sua chave de convite"
+                value={signupData.inviteKey}
+                onChange={(e) => setSignupData(p => ({ ...p, inviteKey: e.target.value }))}
+                required
+                autoComplete="off"
+              />
+              <Ticket className="form-input-icon" size={18} />
+            </div>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem', display: 'block' }}>
+              Solicite uma chave de convite ao administrador.
+            </span>
+          </div>
           <div className="form-group">
             <label className="form-label">NOME</label>
             <input

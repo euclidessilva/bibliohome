@@ -23,6 +23,8 @@ services:
         sync: false
       - key: ADMIN_EMAILS
         sync: false
+      - key: INVITE_KEY
+        sync: false
       - key: VITE_SUPABASE_URL
         sync: false
       - key: VITE_SUPABASE_ANON_KEY
