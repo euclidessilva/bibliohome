@@ -54,7 +54,7 @@
 | **Auth**       | Supabase Auth                         |
 | **API Livros** | Google Books API                      |
 | **Barcode**    | ZXing (câmera) + HID (teclado)        |
-| **Deploy**     | Railway                               |
+| **Deploy**     | Render                                |
 
 ## 📋 Pré-requisitos
 
@@ -116,13 +116,19 @@ O Express compila o React e serve o build junto com a API em http://localhost:30
 
 ## ☁️ Deploy
 
-O projeto está configurado para deploy no [Railway](https://railway.app):
+O projeto está configurado para deploy no [Render](https://render.com) via [`render.yaml`](render.yaml) (Blueprint).
 
-1. Conecte o repositório GitHub ao Railway
-2. Configure as variáveis de ambiente no painel do Railway
-3. O deploy é automático a cada push na `main`
+### Passo a passo
 
-O arquivo [`railway.toml`](railway.toml) já contém a configuração necessária.
+1. Faça push do repositório para o GitHub.
+2. No Render, clique em **New → Blueprint** e selecione o repositório — ele detectará o `render.yaml` automaticamente.
+3. Configure as variáveis de ambiente (marcadas como `sync: false`) no painel do Render:
+   - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+   - `GOOGLE_BOOKS_API_KEY` (opcional)
+   - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (usadas pelo Vite durante o build)
+4. O deploy é automático a cada push na `main`.
+
+> ℹ️ O Express serve o build do React e a API no mesmo domínio/porta fornecidos pelo Render (`process.env.PORT`).
 
 ## 📁 Estrutura do Projeto
 
@@ -165,7 +171,7 @@ bibliohome/
 ├── .gitignore
 ├── LICENSE
 ├── package.json
-├── railway.toml              # Configuração Railway
+├── render.yaml               # Blueprint de deploy no Render
 ├── supabase_migration.sql    # Schema do banco de dados
 └── README.md
 ```
