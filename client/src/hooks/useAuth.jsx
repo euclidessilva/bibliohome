@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { getMe } from '../lib/api';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = useCallback(async (userId) => {
@@ -42,6 +44,7 @@ export function AuthProvider({ children }) {
           } else {
             setUser(null);
             setProfile(null);
+            setIsAdmin(false);
           }
           setLoading(false);
         }
@@ -54,6 +57,13 @@ export function AuthProvider({ children }) {
 
     return () => subscription?.unsubscribe();
   }, [fetchProfile]);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    getMe()
+      .then((data) => setIsAdmin(!!data.isAdmin))
+      .catch(() => setIsAdmin(false));
+  }, [user]);
 
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -75,6 +85,7 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
+    setIsAdmin(false);
   };
 
   const updateProfile = async (updates) => {
@@ -92,9 +103,8 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{
-      user, profile, loading,
+      user, profile, loading, isAdmin,
       signIn, signUp, signOut, updateProfile, fetchProfile,
-      isAdmin: profile?.role === 'admin',
     }}>
       {children}
     </AuthContext.Provider>

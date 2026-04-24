@@ -17,6 +17,12 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+// ─── Auth ────────────────────────────────────────────────
+export async function getMe() {
+  const res = await api.get('/api/auth/me');
+  return res.data;
+}
+
 // ─── Books API ───────────────────────────────────────────
 export async function fetchBookByISBN(isbn) {
   const res = await api.get(`/api/books/isbn/${isbn}`);
@@ -38,24 +44,19 @@ export async function deleteBook(id) {
   return res.data;
 }
 
-// ─── Users API ───────────────────────────────────────────
-export async function fetchUsers() {
-  const res = await api.get('/api/users');
+// ─── Admin API ───────────────────────────────────────────
+export async function adminListUsers() {
+  const res = await api.get('/api/admin/users');
   return res.data;
 }
 
-export async function inviteUser(email) {
-  const res = await api.post('/api/users/invite', { email });
+export async function adminUpdatePassword(id, password) {
+  const res = await api.patch(`/api/admin/users/${id}/password`, { password });
   return res.data;
 }
 
-export async function changeUserRole(userId, role) {
-  const res = await api.patch(`/api/users/${userId}/role`, { role });
-  return res.data;
-}
-
-export async function removeUser(userId) {
-  const res = await api.delete(`/api/users/${userId}`);
+export async function adminDeleteUser(id) {
+  const res = await api.delete(`/api/admin/users/${id}`);
   return res.data;
 }
 

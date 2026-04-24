@@ -6,8 +6,7 @@ const supabase = createClient(
 );
 
 /**
- * Middleware to verify Supabase JWT and attach user to request.
- * Expects: Authorization: Bearer <token>
+ * Middleware: valida o JWT do Supabase e anexa o usuário em req.user.
  */
 async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -25,14 +24,7 @@ async function authMiddleware(req, res, next) {
       return res.status(401).json({ error: 'Token inválido ou expirado' });
     }
 
-    // Fetch user profile for role info
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    req.user = { ...user, profile };
+    req.user = user;
     req.supabaseToken = token;
     next();
   } catch (err) {
@@ -41,15 +33,27 @@ async function authMiddleware(req, res, next) {
   }
 }
 
+function adminEmails() {
+  return (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function isAdminEmail(email) {
+  if (!email) return false;
+  return adminEmails().includes(email.toLowerCase());
+}
+
 /**
- * Middleware to check if user is admin.
- * Must be used after authMiddleware.
+ * Middleware: bloqueia acesso se o usuário autenticado não estiver em ADMIN_EMAILS.
+ * Use SEMPRE depois de authMiddleware.
  */
-function adminOnly(req, res, next) {
-  if (!req.user?.profile?.role || req.user.profile.role !== 'admin') {
-    return res.status(403).json({ error: 'Acesso restrito a administradores' });
+function requireAdmin(req, res, next) {
+  if (!isAdminEmail(req.user?.email)) {
+    return res.status(403).json({ error: 'Acesso restrito a administradores.' });
   }
   next();
 }
 
-module.exports = { authMiddleware, adminOnly, supabase };
+module.exports = { authMiddleware, requireAdmin, isAdminEmail, supabase };

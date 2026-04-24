@@ -7,7 +7,8 @@ const http = require('http');
 const os = require('os');
 
 const booksRoutes = require('./routes/books');
-const usersRoutes = require('./routes/users');
+const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -35,7 +36,8 @@ app.use(express.json());
 
 // API Routes
 app.use('/api/books', booksRoutes);
-app.use('/api/users', usersRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Serve React static files in production
 const clientBuildPath = path.join(__dirname, '..', 'client', 'dist');

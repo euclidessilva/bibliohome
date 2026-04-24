@@ -1,8 +1,8 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { LayoutDashboard, BookOpen, PlusSquare, Settings, Plus } from 'lucide-react';
+import { LayoutDashboard, BookOpen, PlusSquare, Settings, Plus, Shield } from 'lucide-react';
 
-const navItems = [
+const baseNavItems = [
   { to: '/', label: 'Painel', icon: LayoutDashboard },
   { to: '/colecao', label: 'Minha Coleção', icon: BookOpen },
   { to: '/adicionar', label: 'Adicionar Livro', icon: PlusSquare },
@@ -10,8 +10,12 @@ const navItems = [
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+
+  const navItems = isAdmin
+    ? [...baseNavItems, { to: '/admin', label: 'Admin', icon: Shield }]
+    : baseNavItems;
 
   const getInitials = (name) => {
     if (!name) return '?';
@@ -61,7 +65,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="sidebar-profile-info">
               <div className="sidebar-profile-name">{profile?.nome || 'Curador'}</div>
               <div className="sidebar-profile-role">
-                {profile?.role === 'admin' ? 'Acesso Admin' : 'Membro Pro'}
+                {isAdmin ? 'Acesso Admin' : 'Membro Pro'}
               </div>
             </div>
           </div>
