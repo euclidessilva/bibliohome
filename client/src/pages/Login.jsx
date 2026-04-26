@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { validateInviteKey } from '../lib/api';
 import { Mail, KeyRound, Ticket } from 'lucide-react';
@@ -17,6 +17,15 @@ export default function Login() {
 
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('signup') === '1') {
+      setShowSignup(true);
+      searchParams.delete('signup');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

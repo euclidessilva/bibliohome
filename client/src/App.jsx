@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AddBook from './pages/AddBook';
@@ -23,8 +24,8 @@ export default function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={user ? <Dashboard /> : <Landing />} />
         <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
-        <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/adicionar" element={<ProtectedRoute><AddBook /></ProtectedRoute>} />
         <Route path="/colecao" element={<ProtectedRoute><Collection /></ProtectedRoute>} />
         <Route path="/configuracoes" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
